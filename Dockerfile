@@ -8,7 +8,7 @@ RUN apt update && \
     libpng-dev libsdl2-dev libsodium-dev libvorbis-dev \
     libxml2-dev python rustc zlib1g-dev libminiupnpc-dev \
     libopenal-dev libogg-dev && \
-    apt install -y wget tar
+    apt install -y wget
 
 ENV SHELL=/bin/bash
 ENV VERSION=0ad-0.0.26-alpha
@@ -18,7 +18,7 @@ RUN useradd -M -U -d /home/user0ad user0ad
 RUN passwd -d user0ad
 RUN chown user0ad:user0ad $WORKDIR_PATH
 USER user0ad
-RUN /bin/bash -c 'wget $VERSION-unix-build.tar.gz; \
+RUN /bin/bash -c 'wget https://releases.wildfiregames.com/$VERSION-unix-build.tar.gz; \
 sha1sum -c $VERSION-unix-build.tar.gz.sha1sum; \
 tar xvf $VERSION-unix-build.tar.xz; \
 cd $VERSION/build/workspaces; \
@@ -33,4 +33,4 @@ cp $VERSION/*.txt .; \
 rm -rf ${VERSION}*'
 
 USER root
-RUN apt remove -y build-essential cargo cmake *dev rustc python wget tar
+RUN apt remove -y build-essential cargo cmake *dev rustc python wget
