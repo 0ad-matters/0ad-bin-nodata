@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-RUN apt update && \
+RUN apt-get update && apt-get upgrade -y && \
     apt install -y build-essential cargo cmake libboost-dev libboost-system-dev   \
     libboost-filesystem-dev libcurl4-gnutls-dev libenet-dev libfmt-dev   \
     libfreetype-dev libfreetype6 libfreetype6-dev \
@@ -8,7 +8,7 @@ RUN apt update && \
     libpng-dev libsdl2-dev libsodium-dev libvorbis-dev \
     libxml2-dev python rustc zlib1g-dev libminiupnpc-dev \
     libopenal-dev libogg-dev && \
-    apt install -y wget
+    apt-get install -y wget
 
 ENV SHELL=/bin/bash
 ENV VERSION=0ad-0.0.26-alpha
@@ -33,7 +33,7 @@ mv $VERSION/binaries .; \
 mkdir -p binaries/data/mods/mod; \
 mv mod.zip binaries/data/mods/mod; \
 cp $VERSION/*.txt .; \
-rm -rf ${VERSION}*;'
+rm -rf ${VERSION}*'
 
 USER root
 RUN apt remove -y build-essential cargo cmake *dev rustc python wget
