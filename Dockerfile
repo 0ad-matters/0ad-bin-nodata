@@ -18,8 +18,8 @@ RUN useradd -M -U -d /home/user0ad user0ad
 RUN passwd -d user0ad
 RUN chown user0ad:user0ad $WORKDIR_PATH
 USER user0ad
-RUN 'cp $GITHUB_WORKSPACE/data/mod.zip $WORKDIR_PATH; \
-/bin/bash -c 'wget https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
+RUN /bin/bash -c 'cp $GITHUB_WORKSPACE/data/mod.zip $WORKDIR_PATH; \
+wget https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
 sha1sum -c $VERSION-unix-build.tar.gz.sha1sum; \
 tar xvf $VERSION-unix-build.tar.xz; \
 cd $VERSION/build/workspaces; \
