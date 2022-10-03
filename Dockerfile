@@ -18,7 +18,8 @@ RUN useradd -M -U -d /home/user0ad user0ad
 RUN passwd -d user0ad
 RUN chown user0ad:user0ad $WORKDIR_PATH
 USER user0ad
-RUN /bin/bash -c 'wget https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
+RUN 'cp $GITHUB_WORKSPACE/data/mod.zip $WORKDIR_PATH; \
+/bin/bash -c 'wget https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
 sha1sum -c $VERSION-unix-build.tar.gz.sha1sum; \
 tar xvf $VERSION-unix-build.tar.xz; \
 cd $VERSION/build/workspaces; \
@@ -29,8 +30,10 @@ rm *.a; \
 strip *; \
 cd $WORKDIR_PATH; \
 mv $VERSION/binaries .; \
+mkdir -p binaries/data/mods/mod; \
+mv mod.zip binaries/data/mods/mod; \
 cp $VERSION/*.txt .; \
-rm -rf ${VERSION}*'
+rm -rf ${VERSION}*;'
 
 USER root
 RUN apt remove -y build-essential cargo cmake *dev rustc python wget

@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ "trunk" ]
-  pull_request:
-    branches: [ "trunk" ]
 
 jobs:
   docker:
@@ -29,4 +27,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/0ad-bin-nodata:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/0ad-gh-build-pyromod:0.26.4
