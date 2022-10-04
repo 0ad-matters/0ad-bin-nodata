@@ -32,6 +32,7 @@ cd $WORKDIR_PATH; \
 mv $VERSION/binaries .; \
 mkdir -p binaries/data/mods; \
 mv package_mod binaries/data/mods; \
+rm -rf binaries/data/mods/_test*; \
 cp $VERSION/*.txt .; \
 rm -rf ${VERSION}*'
 
