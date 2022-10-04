@@ -19,6 +19,7 @@ RUN passwd -d user0ad
 RUN chown user0ad:user0ad $WORKDIR_PATH
 USER user0ad
 RUN /bin/bash -c 'wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
+wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz.sha1sum; \
 sha1sum -c $VERSION-unix-build.tar.xz.sha1sum; \
 tar xf $VERSION-unix-build.tar.xz; \
 cd $VERSION/binaries/data/mods; \
