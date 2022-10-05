@@ -21,9 +21,12 @@ RUN apt-get upgrade -y
 RUN apt-get install -y \
   libfreetype6 \
   libx11-6 \
-  libasound2
+  libasound2 \
+  zip
 
 RUN useradd -M -U user0ad
 RUN passwd -d user0ad
 WORKDIR /home/user0ad
+RUN chown user0ad:user0ad /home/user0ad
+USER user0ad
 COPY --from=0  /squashfs-root ./
