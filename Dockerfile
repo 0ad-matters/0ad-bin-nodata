@@ -1,14 +1,4 @@
-FROM debian:bullseye-slim
-
-RUN apt-get update -qq && apt-get upgrade -qq -y && \
-    apt install -qq -y build-essential cargo cmake libboost-dev libboost-system-dev   \
-    libboost-filesystem-dev libcurl4-gnutls-dev libenet-dev libfmt-dev   \
-    libfreetype-dev libfreetype6 libfreetype6-dev \
-    libgloox-dev libicu-dev \
-    libpng-dev libsdl2-dev libsodium-dev libvorbis-dev \
-    libxml2-dev python rustc zlib1g-dev libminiupnpc-dev \
-    libopenal-dev libogg-dev && \
-    apt-get install -qq -y wget git
+FROM andy5995/0ad-build-env:bullseye
 
 ENV SHELL=/bin/bash
 ENV VERSION=0ad-0.0.26-alpha
@@ -18,27 +8,52 @@ RUN useradd -M -U -d /home/user0ad user0ad
 RUN passwd -d user0ad
 RUN chown user0ad:user0ad $WORKDIR_PATH
 USER user0ad
-RUN /bin/bash -c 'wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz; \
-wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz.sha1sum; \
-sha1sum -c $VERSION-unix-build.tar.xz.sha1sum; \
-tar xf $VERSION-unix-build.tar.xz; \
-cd $VERSION/binaries/data/mods; \
-git clone --depth 1 https://github.com/StanleySweet/package_mod; \
-cd package_mod; \
-git reset --hard 6e520de; \
-rm -rf .git; \
-cd $WORKDIR_PATH; \
-cd $VERSION/build/workspaces; \
-./update-workspaces.sh -j$(nproc) --disable-atlas --without-pch > /dev/null; \
-make config=release -C gcc -j$(nproc) > /dev/null; \
-cd ../../binaries/system; \
-rm *.a; \
-strip *; \
-cd $WORKDIR_PATH; \
-mv $VERSION/binaries .; \
-rm -rf binaries/data/mods/_test*; \
-cp $VERSION/*.txt .; \
-rm -rf ${VERSION}*'
+RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz
+RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz.sha1sum
+RUN sha1sum -c $VERSION-unix-build.tar.xz.sha1sum
+RUN tar xf $VERSION-unix-build.tar.xz
+RUN git clone --depth 1 https://github.com/StanleySweet/package_mod $VERSION/binaries/data/mods/package_mod
 
-USER root
-RUN apt purge -qq -y build-essential cargo cmake *dev rustc python wget git
+RUN cd $VERSION/binaries/data/mods/package_mod \
+    && git reset --hard 6e520de \
+    && rm -rf .git \
+    && cd -
+
+WORKDIR $WORKDIR_PATH/$VERSION/build/workspaces/
+RUN ./update-workspaces.sh -j$(nproc) --disable-atlas --without-pch > /dev/null
+RUN make config=release -C gcc -j$(nproc) > /dev/null
+
+RUN cd ../../binaries/system
+RUN rm *.a
+RUN strip *
+WORKDIR $WORKDIR_PATH
+RUN mv $VERSION/binaries .
+RUN rm -rf binaries/data/mods/_test*
+COPY $VERSION/*.txt binaries
+
+FROM debian:bullseye-slim
+RUN apt-get update -y -qq && apt-get upgrade -qq -y && apt-get install -y -qq \
+  libboost-system1.74.0   \
+  libboost-filesystem1.74.0 \
+  libcurl4-gnutls-dev \
+  libenet7 \
+  libfmt7 \
+  libfreetype6 \
+  libgloox18 \
+  libicu67 \
+  libpng16-16 \
+  libsdl2-2.0-0 \
+  libsodium23 \
+  libvorbis0a \
+  libxml2 \
+  zlib1g \
+  libminiupnpc17 \
+  libopenal1 \
+  libogg0
+
+RUN useradd -M -U user0ad
+RUN passwd -d user0ad
+WORKDIR /home/user0ad
+RUN mkdir binaries
+COPY --from=0 /home/user0ad/binaries binaries
+RUN chown -R user0ad:user0ad /home/user0ad
