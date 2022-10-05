@@ -3,8 +3,15 @@ name: Docker AppImage Image CI
 on:
   push:
     branches: [ "trunk" ]
+    paths:
+      - '.github/workflows/docker-appimage-image.yml'
+      - 'Dockerfile.appimage'
   pull_request:
     branches: [ "trunk" ]
+    paths:
+      - '.github/workflows/docker-appimage-image.yml'
+      - 'Dockerfile.appimage'
+
 
 jobs:
   docker-appimage:

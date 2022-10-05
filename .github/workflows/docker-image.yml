@@ -3,8 +3,14 @@ name: Docker Image CI
 on:
   push:
     branches: [ "trunk" ]
+    paths:
+      - '.github/workflows/docker-image.yml'
+      - 'Dockerfile'
   pull_request:
     branches: [ "trunk" ]
+    paths:
+      - '.github/workflows/docker-image.yml'
+      - 'Dockerfile'
 
 jobs:
   docker:
