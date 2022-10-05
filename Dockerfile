@@ -2,11 +2,11 @@ FROM andy5995/0ad-build-env:bullseye
 
 ENV SHELL=/bin/bash
 ENV VERSION=0ad-0.0.26-alpha
-ENV WORKDIR_PATH=/home/user0ad
-WORKDIR $WORKDIR_PATH
-RUN useradd -M -U -d /home/user0ad user0ad
+ENV HOME_DIR=/home/user0ad
+WORKDIR $HOME_DIR
+RUN useradd -M -U user0ad
 RUN passwd -d user0ad
-RUN chown user0ad:user0ad $WORKDIR_PATH
+RUN chown user0ad:user0ad $HOME_DIR
 USER user0ad
 RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz
 RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz.sha1sum
@@ -16,17 +16,16 @@ RUN git clone --depth 1 https://github.com/StanleySweet/package_mod $VERSION/bin
 
 RUN cd $VERSION/binaries/data/mods/package_mod \
     && git reset --hard 6e520de \
-    && rm -rf .git \
-    && cd -
+    && rm -rf .git
 
-WORKDIR $WORKDIR_PATH/$VERSION/build/workspaces/
+WORKDIR $HOME_DIR/$VERSION/build/workspaces/
 RUN ./update-workspaces.sh -j$(nproc) --disable-atlas --without-pch > /dev/null
 RUN make config=release -C gcc -j$(nproc) > /dev/null
 
-RUN cd ../../binaries/system
+WORKDIR  $HOME_DIR/$VERSION/binaries/system
 RUN rm *.a
 RUN strip *
-WORKDIR $WORKDIR_PATH
+WORKDIR $HOME_DIR
 RUN mv $VERSION/binaries .
 RUN rm -rf binaries/data/mods/_test*
 COPY $VERSION/*.txt binaries
