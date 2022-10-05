@@ -12,19 +12,17 @@ RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz
 RUN wget -nv https://releases.wildfiregames.com/$VERSION-unix-build.tar.xz.sha1sum
 RUN sha1sum -c $VERSION-unix-build.tar.xz.sha1sum
 RUN tar xf $VERSION-unix-build.tar.xz
-RUN git clone --depth 1 https://github.com/StanleySweet/package_mod $VERSION/binaries/data/mods/package_mod
 
-RUN cd $VERSION/binaries/data/mods/package_mod \
-    && git reset --hard 6e520de \
-    && rm -rf .git
+COPY /package_mod $VERSION/binaries/data/mods/package_mod
 
 WORKDIR $HOME_DIR/$VERSION/build/workspaces/
 RUN ./update-workspaces.sh -j$(nproc) --disable-atlas --without-pch > /dev/null
 RUN make config=release -C gcc -j$(nproc) > /dev/null
 
 WORKDIR  $HOME_DIR/$VERSION/binaries/system
-RUN rm *.a
-RUN strip *
+RUN rm *.a test libmozjs78-ps-debug.so
+RUN strip *.so
+RUN strip pyrogenesis
 WORKDIR $HOME_DIR
 RUN mv $VERSION/binaries .
 RUN rm -rf binaries/data/mods/_test*
