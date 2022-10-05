@@ -1,0 +1,29 @@
+FROM debian:bullseye-slim
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget
+ENV VERSION=0.0.26-alpha
+ENV REV=2210010553
+ENV BASE_IMAGE=0ad-$VERSION-$REV-x86_64.AppImage
+RUN wget -nv https://github.com/0ad-matters/0ad-appimage/releases/download/v$VERSION/$BASE_IMAGE
+RUN wget https://github.com/0ad-matters/0ad-appimage/releases/download/v$VERSION/$BASE_IMAGE.sha1sum
+RUN sha1sum -c $BASE_IMAGE.sha1sum
+RUN chmod +x $BASE_IMAGE
+RUN ./$BASE_IMAGE --appimage-extract
+WORKDIR /squashfs-root
+RUN rm AppRun* 0ad.desktop 0ad.png
+RUN rm -rf apprun-hooks
+WORKDIR /squashfs-root/usr/data/mods
+RUN rm -rf  _test* public mod
+RUN chmod 777 -R /squashfs-root
+
+FROM debian:bullseye
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y \
+  libfreetype6 \
+  libx11-6 \
+  libasound2
+
+RUN useradd -M -U user0ad
+RUN passwd -d user0ad
+WORKDIR /home/user0ad
+COPY --from=0  /squashfs-root ./
