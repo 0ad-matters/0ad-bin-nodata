@@ -7,7 +7,7 @@ on:
     branches: [ "trunk" ]
 
 jobs:
-  docker:
+  docker-appimage:
     runs-on: ubuntu-latest
     steps:
       -
@@ -39,6 +39,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.appimage
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/0ad-bin-nodata:appimage-latest
