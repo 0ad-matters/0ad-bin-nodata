@@ -21,10 +21,14 @@ RUN chmod 777 -R /squashfs-root
 FROM debian:bookworm-slim
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install --no-install-recommends -y \
+RUN apt install -y \
   libasound2 \
+  libdrm2 \
+  libgbm1 \
   libfreetype6 \
+  libwayland-client0 \
   libx11-6 \
+  libx11-xcb1 \
   zip \
   && rm -rf /var/lib/apt/lists
 
